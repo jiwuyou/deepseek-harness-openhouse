@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "id": "deepseek-harness",
+  "title": "DeepSeek Harness",
+  "description": "DeepSeek Harness (dsh) running in Ubuntu/proot and managed by service-manager",
+  "kind": "app",
+  "enabled": true,
+  "version": "0.1.0",
+  "tags": [
+    "group:local-stack",
+    "openhouse-component:deepseek-harness",
+    "deepseek",
+    "agent",
+    "runtime:ubuntu",
+    "manager:termux-native"
+  ],
+  "paths": {
+    "home": "/root/deepseek-harness",
+    "source": "/root/deepseek-harness"
+  },
+  "ports": [
+    {
+      "host": "127.0.0.1",
+      "name": "web",
+      "port": 23090,
+      "url": "http://127.0.0.1:23090/"
+    }
+  ],
+  "shellMenu": {
+    "visible": true,
+    "section": "apps",
+    "order": 210,
+    "title": "DeepSeek Harness",
+    "desktop": {
+      "icon": "bot",
+      "order": 210,
+      "visible": true
+    },
+    "entry": {
+      "type": "webview",
+      "url": "http://127.0.0.1:23090/"
+    },
+    "controlEntry": {
+      "type": "service-control",
+      "title": "控制",
+      "serviceNames": ["deepseek-harness"],
+      "serviceRefs": ["service-manager://services/deepseek-harness"]
+    }
+  },
+  "smallphoneApp": {
+    "visible": true,
+    "section": "apps",
+    "order": 210,
+    "icon": "bot",
+    "title": "DeepSeek Harness",
+    "entry": {
+      "type": "webview",
+      "url": "http://127.0.0.1:23090/"
+    },
+    "controlEntry": {
+      "type": "service-control",
+      "title": "控制",
+      "serviceNames": ["deepseek-harness"],
+      "serviceRefs": ["service-manager://services/deepseek-harness"]
+    }
+  },
+  "serviceManager": {
+    "required": true,
+    "services": [
+      {
+        "name": "deepseek-harness",
+        "role": "web",
+        "port": 23090,
+        "title": "DeepSeek Harness Web",
+        "url": "http://127.0.0.1:23090/",
+        "serviceRef": "service-manager://services/deepseek-harness",
+        "health": {
+          "type": "tcp",
+          "address": "127.0.0.1:23090"
+        },
+        "controls": ["status", "start", "stop", "restart", "logs"]
+      }
+    ]
+  },
+  "ai": {
+    "visible": true,
+    "intents": [
+      { "name": "open", "target": "smallphoneApp.entry" },
+      { "name": "control", "target": "smallphoneApp.controlEntry" }
+    ]
+  }
+}

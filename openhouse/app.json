@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "deepseek-harness",
+  "title": "DeepSeek Harness",
+  "description": "DeepSeek Harness (dsh) — 开源 Agent 框架，一切皆插件，基于 Cordis",
+  "kind": "app",
+  "shellMenu": {
+    "visible": true,
+    "section": "apps",
+    "order": 210,
+    "entry": {
+      "type": "webview",
+      "url": "http://127.0.0.1:23090/"
+    },
+    "controlEntry": {
+      "type": "service-control",
+      "serviceNames": ["deepseek-harness"],
+      "serviceRefs": ["service-manager://services/deepseek-harness"]
+    }
+  },
+  "smallphoneApp": {
+    "visible": true,
+    "section": "apps",
+    "order": 210,
+    "icon": "bot",
+    "entry": {
+      "type": "webview",
+      "url": "http://127.0.0.1:23090/"
+    },
+    "controlEntry": {
+      "type": "service-control",
+      "serviceNames": ["deepseek-harness"],
+      "serviceRefs": ["service-manager://services/deepseek-harness"]
+    }
+  },
+  "serviceManager": {
+    "required": true,
+    "services": [
+      {
+        "name": "deepseek-harness",
+        "serviceRef": "service-manager://services/deepseek-harness"
+      }
+    ]
+  },
+  "ai": {}
+}

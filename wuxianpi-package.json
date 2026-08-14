@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "io.deepseek.dsh",
+  "name": "DeepSeek Harness for OpenHouse",
+  "version": "0.1.0",
+  "summary": "Run DeepSeek Harness in Ubuntu/proot and expose it as an OpenHouse small app",
+  "categories": ["app"],
+  "requires": {
+    "hostCapabilities": [
+      { "id": "wuxianpi.package", "contractVersion": 1 },
+      { "id": "service-manager.service", "contractVersion": 1 },
+      { "id": "openhouse.app", "contractVersion": 1 }
+    ],
+    "packages": []
+  },
+  "build": { "mode": "none" },
+  "artifacts": [],
+  "contributions": [
+    {
+      "id": "io.deepseek.dsh/service.web",
+      "type": "service-manager.service",
+      "name": "DeepSeek Harness Web service",
+      "manifest": "service/service.json"
+    },
+    {
+      "id": "io.deepseek.dsh/app.desktop",
+      "type": "openhouse.app",
+      "name": "DeepSeek Harness desktop entry",
+      "manifest": "openhouse/app.json"
+    }
+  ]
+}

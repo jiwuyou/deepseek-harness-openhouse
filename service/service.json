@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "id": "deepseek-harness",
+  "service": {
+    "name": "deepseek-harness",
+    "description": "DeepSeek Harness (dsh) Web UI — 开源 Agent 框架，通过 proot-distro 在 Ubuntu 中运行",
+    "provider": "proot-distro",
+    "command": [
+      "sh", "-lc",
+      "set -eu; unset LD_LIBRARY_PATH LD_PRELOAD PREFIX; export HOME=/root TMPDIR=/tmp; export PATH=\"$1\"; shift; while [ \"$#\" -gt 0 ] && [ \"$1\" != \"--\" ]; do export \"$1\"; shift; done; shift; exec \"$@\"",
+      "service-manager-guest",
+      "/root/.local/node/bin:/root/.local/bin:/root/.npm-global/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "HOME=/root",
+      "DSH_WEB_HOST=127.0.0.1",
+      "DSH_WEB_PORT={{port:web}}",
+      "--",
+      "/root/.local/node/bin/node",
+      "/root/deepseek-harness/apps/cli/lib/bin.js",
+      "web",
+      "--port", "{{port:web}}"
+    ],
+    "env": {
+      "HOME": "/data/data/com.termux/files/home",
+      "LD_LIBRARY_PATH": "/data/data/com.termux/files/usr/lib",
+      "PATH": "/data/data/com.termux/files/usr/bin:/system/bin:/system/xbin",
+      "PREFIX": "/data/data/com.termux/files/usr",
+      "TMPDIR": "/data/data/com.termux/files/usr/tmp"
+    },
+    "health": [
+      {
+        "type": "tcp",
+        "address": "127.0.0.1:{{port:web}}",
+        "interval": "30s",
+        "timeout": "30s"
+      }
+    ],
+    "ports": [
+      {
+        "name": "web",
+        "host": "127.0.0.1",
+        "preferred": 23090,
+        "dynamic": false,
+        "protocol": "tcp",
+        "envVar": "DSH_WEB_PORT",
+        "pool": "local-web",
+        "endpoint": { "scheme": "http", "path": "/" }
+      }
+    ],
+    "runtime": {
+      "distro": "ubuntu",
+      "home": "/root",
+      "user": "root"
+    },
+    "restart": {
+      "mode": "on-failure",
+      "max_retries": 3
+    },
+    "enabled": true,
+    "residentByDefault": false,
+    "tags": ["openhouseai", "small-app", "group:local-stack", "deepseek", "agent", "runtime:ubuntu", "manager:termux-native"],
+    "working_dir": "/root/deepseek-harness"
+  }
+}
