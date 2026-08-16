@@ -22,7 +22,9 @@ The API returns HTTP 400 when all startup attempts fail. Run curl without `-f` o
 
 ## Port 23090 is already in use
 
-The OpenHouse manifest contains a fixed URL, so the service reserves a fixed port. Stop the conflicting service or change port `23090` consistently in:
+First check for duplicate registrations with the same service name. A development service must be registered through the API only; do not also copy it into `services.d`. The current `register-dev.sh --replace` removes all matching development registrations before creating one service.
+
+The OpenHouse manifest contains a fixed URL, so the service reserves a fixed port. Stop any remaining conflicting service or change port `23090` consistently in:
 
 - `service/service.json`
 - `openhouse/app.json`

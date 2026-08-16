@@ -45,6 +45,7 @@ fi
 
 cd "$DSH_DIR"
 pnpm install
+pnpm --dir native/landlock-run exec tsc -b --force
 pnpm run build
 
 printf '\nDeepSeek Harness is built. Stable Node path: %s\n' /root/.local/node/bin/node

@@ -31,23 +31,26 @@ if [[ -z "$TOKEN" ]]; then
   exit 1
 fi
 
-existing_id="$(curl -fsS -H "Authorization: Bearer $TOKEN" "$SM_URL/api/v1/services" | python3 -c '
+existing_ids="$(curl -fsS -H "Authorization: Bearer $TOKEN" "$SM_URL/api/v1/services" | python3 -c '
 import json, sys
 for item in json.load(sys.stdin):
     if item.get("spec", {}).get("name") == "deepseek-harness":
         print(item["id"])
-        break
 ')"
 
-if [[ -n "$existing_id" ]]; then
+if [[ -n "$existing_ids" ]]; then
   if [[ "$REPLACE" != "--replace" ]]; then
-    echo "Service already exists as $existing_id. Re-run with --replace to replace it." >&2
+    echo "Service already exists. Re-run with --replace to replace every service named $SERVICE_NAME." >&2
+    printf '%s\n' "$existing_ids" >&2
     exit 1
   fi
-  curl -fsS -X POST -H "Authorization: Bearer $TOKEN" \
-    "$SM_URL/api/v1/services/$existing_id/stop" >/dev/null 2>&1 || true
-  curl -fsS -X DELETE -H "Authorization: Bearer $TOKEN" \
-    "$SM_URL/api/v1/services/$existing_id" >/dev/null
+  while IFS= read -r existing_id; do
+    [[ -n "$existing_id" ]] || continue
+    curl -fsS -X POST -H "Authorization: Bearer $TOKEN" \
+      "$SM_URL/api/v1/services/$existing_id/stop" >/dev/null 2>&1 || true
+    curl -fsS -X DELETE -H "Authorization: Bearer $TOKEN" \
+      "$SM_URL/api/v1/services/$existing_id" >/dev/null
+  done <<< "$existing_ids"
 fi
 
 spec_file="$(mktemp)"
@@ -68,10 +71,8 @@ response="$(curl -fsS -X POST \
   "$SM_URL/api/v1/services")"
 service_id="$(printf '%s' "$response" | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
 
-mkdir -p "$HOME/.config/openhouseai/service-manager/services.d"
-cp "$ROOT_DIR/service/service.json" \
-  "$HOME/.config/openhouseai/service-manager/services.d/deepseek-harness.json"
-
+# Development registration is API-owned. Copying the same service into
+# services.d would create a second service after service-manager reloads.
 mkdir -p "$HOME/.config/openhouseai/components.d"
 cp "$ROOT_DIR/openhouse/component.dev.json" \
   "$HOME/.config/openhouseai/components.d/deepseek-harness.json"

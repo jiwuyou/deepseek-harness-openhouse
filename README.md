@@ -37,7 +37,8 @@ deepseek-harness-openhouse/
 │   └── verify.sh
 └── docs/
     ├── termux-compatibility.md
-    └── troubleshooting.md
+    ├── troubleshooting.md
+    └── upstream-mirrors.md
 ```
 
 `openhouse/app.json` is the formal `openhouse.app` package contribution. `openhouse/component.dev.json` is only for direct registration while developing outside WuxianPi Package Manager.
@@ -70,7 +71,7 @@ chmod +x scripts/*.sh
 The script performs three stages:
 
 1. Runs `scripts/setup-ubuntu.sh` inside Ubuntu.
-2. Installs nvm, Node.js 22, pnpm 11.7.0, clones dsh to `/root/deepseek-harness`, installs dependencies, and builds it.
+2. Installs nvm, Node.js 22, pnpm 11.7.0, clones dsh to `/root/deepseek-harness`, installs dependencies, and builds both the nested Landlock workspace and the main workspace.
 3. Registers the ServiceSpec and development OpenHouse component, starts the service, and verifies HTTP access.
 
 If a development service named `deepseek-harness` is already registered, replacement is explicit:
@@ -106,7 +107,7 @@ The package manifest contributes:
 - `service-manager.service` from `service/service.json`
 - `openhouse.app` from `openhouse/app.json`
 
-For a formal release, publish an immutable Git commit and register that approved commit through WuxianPi Package Manager. The package contribution mechanism should own registration and removal. Do not run `register-dev.sh` on top of a package-managed installation.
+For a formal release, publish an immutable Git commit and register that approved commit through WuxianPi Package Manager. The package contribution mechanism should own registration and removal. Do not run `register-dev.sh` on top of a package-managed installation. Development registration is API-owned and intentionally does not copy the ServiceSpec into `services.d`, because using both mechanisms would create duplicate services after a service-manager reload.
 
 The package deliberately does not clone or build upstream dsh as a package build artifact. Current WuxianPi service contributions do not expose a stable runtime package-root placeholder, while dsh itself is a large mutable source checkout. The host preparation step therefore deploys dsh to the stable guest path `/root/deepseek-harness` before enabling the contribution.
 
@@ -176,3 +177,5 @@ See [Troubleshooting](docs/troubleshooting.md) for known failure modes.
 ## Upstream ownership
 
 This repository is an integration package, not a fork of DeepSeek Harness. dsh source code and licensing remain with the upstream project. Integration issues belong here; upstream runtime defects should be reproduced against the upstream checkout before reporting them there.
+
+The authoritative source is `https://github.com/deepseek-ai/deepseek-harness`. Confirmed GitCode and AtomGit mirrors, commit comparison commands, and supply-chain guidance are documented in [Upstream mirrors](docs/upstream-mirrors.md).
