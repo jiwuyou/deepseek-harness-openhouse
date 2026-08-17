@@ -2,14 +2,14 @@
   "schemaVersion": 1,
   "id": "io.deepseek.dsh",
   "name": "DeepSeek Harness for OpenHouse",
-  "version": "0.1.0",
-  "summary": "Run DeepSeek Harness in Ubuntu/proot and expose it as an OpenHouse small app",
-  "categories": ["app"],
+  "version": "0.2.0",
+  "summary": "Download the OpenHouse solution for installing and running DeepSeek Harness",
+  "description": "This Package downloads the solution repository for Agent-led setup. It does not automatically install or activate DeepSeek Harness.",
+  "categories": ["solution"],
   "requires": {
     "hostCapabilities": [
       { "id": "wuxianpi.package", "contractVersion": 1 },
-      { "id": "service-manager.service", "contractVersion": 1 },
-      { "id": "openhouse.app", "contractVersion": 1 }
+      { "id": "pi.prompt", "contractVersion": 1 }
     ],
     "packages": []
   },
@@ -17,16 +17,12 @@
   "artifacts": [],
   "contributions": [
     {
-      "id": "io.deepseek.dsh/service.web",
-      "type": "service-manager.service",
-      "name": "DeepSeek Harness Web service",
-      "manifest": "service/service.json"
-    },
-    {
-      "id": "io.deepseek.dsh/app.desktop",
-      "type": "openhouse.app",
-      "name": "DeepSeek Harness desktop entry",
-      "manifest": "openhouse/app.json"
+      "id": "io.deepseek.dsh/prompt.use-solution",
+      "type": "pi.prompt",
+      "name": "按照 DeepSeek Harness 方案执行",
+      "description": "读取本地解决方案仓库并按照 README 执行。",
+      "path": "prompts/use-solution.md",
+      "assistantSelectable": true
     }
   ]
 }

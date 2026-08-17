@@ -1,8 +1,8 @@
 # DeepSeek Harness for OpenHouse
 
-This repository documents and packages the integration that runs [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) as an OpenHouse small app.
+This repository is an OpenHouse solution for installing and running [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) on a phone.
 
-The integration keeps the service-manager daemon in Termux native, runs dsh inside an Ubuntu `proot-distro` container, and exposes the dsh Web UI and service controls through OpenHouse.
+Installing the WuxianPi Package downloads this solution repository only. It does not automatically install or activate DeepSeek Harness. An Agent reads this README and the referenced files, obtains user confirmation, then performs the setup. The resulting integration keeps the service-manager daemon in Termux native, runs dsh inside an Ubuntu `proot-distro` container, and exposes the dsh Web UI and service controls through OpenHouse.
 
 ## Architecture
 
@@ -25,6 +25,8 @@ Ubuntu/proot is intentional. Upstream dsh uses glibc native modules and Linux sa
 ```text
 deepseek-harness-openhouse/
 ├── wuxianpi-package.json
+├── prompts/
+│   └── use-solution.md
 ├── service/
 │   └── service.json
 ├── openhouse/
@@ -41,7 +43,7 @@ deepseek-harness-openhouse/
     └── upstream-mirrors.md
 ```
 
-`openhouse/app.json` is the formal `openhouse.app` package contribution. `openhouse/component.dev.json` is only for direct registration while developing outside WuxianPi Package Manager.
+`service/service.json` and `openhouse/app.json` are templates used by the Agent after the user approves the actual dsh setup. They are not activated when the solution Package is downloaded. `openhouse/component.dev.json` remains available for direct development registration.
 
 ## Prerequisites
 
@@ -100,16 +102,13 @@ cd /root/deepseek-harness
 /root/.local/node/bin/node apps/cli/lib/bin.js web --port 3080
 ```
 
-## Formal WuxianPi package
+## WuxianPi solution Package
 
-The package manifest contributes:
+The Package contributes one assistant-selectable, one-shot Prompt: `按照 DeepSeek Harness 方案执行`.
 
-- `service-manager.service` from `service/service.json`
-- `openhouse.app` from `openhouse/app.json`
+For a formal release, publish an immutable Git commit and register that approved commit through WuxianPi Hub. WuxianPi Package Manager downloads the repository and reports its local solution and source paths. The Agent then reads this README and follows the repository after obtaining user confirmation.
 
-For a formal release, publish an immutable Git commit and register that approved commit through WuxianPi Package Manager. The package contribution mechanism should own registration and removal. Do not run `register-dev.sh` on top of a package-managed installation. Development registration is API-owned and intentionally does not copy the ServiceSpec into `services.d`, because using both mechanisms would create duplicate services after a service-manager reload.
-
-The package deliberately does not clone or build upstream dsh as a package build artifact. Current WuxianPi service contributions do not expose a stable runtime package-root placeholder, while dsh itself is a large mutable source checkout. The host preparation step therefore deploys dsh to the stable guest path `/root/deepseek-harness` before enabling the contribution.
+Downloading the solution does not clone, build, register, or start upstream dsh. `service/service.json`, `openhouse/app.json`, and the scripts are execution resources for the Agent. Development registration remains API-owned and intentionally does not copy the ServiceSpec into `services.d`, because using multiple registration mechanisms would create duplicate services after a service-manager reload.
 
 ## Service design
 
